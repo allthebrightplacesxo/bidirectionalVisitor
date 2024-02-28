@@ -1,0 +1,73 @@
+#include <LiquidCrystal_I2C.h>
+LiquidCrystal_I2C lcd(0x27,20,4);
+#define sensorPin1 13
+#define sensorPin2 36
+
+
+int sensorState1 = 0;
+int sensorState2 = 0;
+int count=0;
+int ready_entrer=0;
+int ready_sortir=0;
+
+void setup()
+{
+  pinMode (sensorPin1,INPUT_PULLUP);
+  pinMode (sensorPin2, INPUT_PULLUP);
+
+  
+  lcd.init();   // initialize
+  lcd.backlight();
+  lcd.setCursor(4,0);
+  lcd.print("COUNTER");
+   lcd.setCursor(0,1);
+  lcd.print("No Visitors     ");
+  delay(200);
+}
+
+void loop()
+{  
+  
+  sensorState1 = digitalRead(sensorPin1);
+  sensorState2 = digitalRead(sensorPin2);
+
+  if(sensorState1 == LOW){
+    ready_entrer=1;
+  }else if(sensorState2 == LOW){
+    ready_sortir=1;
+  }
+  if(ready_entrer==1 && sensorState2 == LOW){
+    count++; 
+    ready_entrer=0;
+    ready_sortir=0;
+    delay(500);
+  }else if(ready_sortir==1 && sensorState1 == LOW){
+    count--; 
+    ready_sortir=0;
+    ready_entrer=0;
+    delay(500);
+  }
+
+  
+
+   if(count<=0)
+  {
+    lcd.setCursor(0,1);
+    lcd.print("No visitors    ");
+  }
+  else if (count>0 && count<10){
+    lcd.setCursor(0,1);
+    lcd.print("Visitors:   ");
+    lcd.setCursor(12,1);
+    lcd.print(count);
+    lcd.setCursor(13,1);
+    lcd.print("  "); 
+    
+  }
+  else {
+    lcd.setCursor(0,1);
+    lcd.print("Visitors:   ");
+    lcd.setCursor(12,1);
+    lcd.print(count);  
+  }
+}
